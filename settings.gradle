@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "NutriZeka"
 include ':app'
+project(':app').projectDir = new File('NutriZekaApp/app')
