@@ -28,43 +28,23 @@ jobs:
           unzip -q gradle.zip -d $HOME/gradle
           echo "$HOME/gradle/gradle-8.4/bin" >> $GITHUB_PATH
 
-      - name: Show repo structure
+      - name: Find project root and build
         run: |
-          echo "=== Repo root ==="
-          find . -maxdepth 3 -type f | grep -v ".git" | sort
-
-      - name: Find build.gradle location
-        run: |
-          echo "=== Finding build.gradle ==="
-          find . -name "build.gradle" | grep -v ".git"
-          echo "=== Finding settings.gradle ==="
-          find . -name "settings.gradle" | grep -v ".git"
-
-      - name: Build Debug APK
-        run: |
-          # build.gradle nerede?
-          if [ -f "build.gradle" ]; then
-            BUILD_DIR="."
-          elif [ -f "NutriZekaApp/build.gradle" ]; then
-            BUILD_DIR="NutriZekaApp"
-          else
-            echo "ERROR: build.gradle not found!"
-            exit 1
-          fi
-          echo "Building from: $BUILD_DIR"
-          cd "$BUILD_DIR"
-          gradle assembleDebug --no-daemon --stacktrace 2>&1 | grep -E "ERROR|error|FAILURE|warning|BUILD"
-
-      - name: Find and upload APK
-        run: |
-          APK=$(find . -name "*.apk" -type f | head -1)
-          echo "APK found: $APK"
+          # build.gradle nerede bul
+          BUILD_ROOT=$(find . -name "build.gradle" -not -path "*/app/*" -not -path "*/.git/*" | head -1 | xargs dirname)
+          echo "Project root: $BUILD_ROOT"
+          cd "$BUILD_ROOT"
+          echo "=== Files here ==="
+          ls -la
+          echo "=== Building APK ==="
+          gradle assembleDebug --no-daemon 2>&1
+          echo "=== Finding APK ==="
+          find . -name "*.apk" -type f
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: NutriZeka-APK
           path: |
-            app/build/outputs/apk/debug/app-debug.apk
-            NutriZekaApp/app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: warn
+            **/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
