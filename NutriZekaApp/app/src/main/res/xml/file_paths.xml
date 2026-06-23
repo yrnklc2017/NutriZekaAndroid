@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Dahili depolama -->
+    <files-path name="internal_files" path="." />
+    <cache-path name="internal_cache" path="." />
+    <!-- Harici depolama -->
+    <external-path name="external_storage" path="." />
+    <external-files-path name="external_files" path="." />
+    <external-cache-path name="external_cache" path="." />
+    <!-- Kamera için özel Pictures klasörü -->
+    <external-files-path name="camera_photos" path="Pictures/" />
+</paths>
